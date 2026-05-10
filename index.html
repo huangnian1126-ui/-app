@@ -4,6 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Bauhaus Ledger Pro</title>
+    
+    <link rel="apple-touch-icon" href="icon.png">
+    <link rel="icon" type="image/png" href="icon.png">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="自创记账">
+    
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap');
@@ -47,7 +54,7 @@
         /* 历史记录遮罩层，禁止横向溢出 */
         #historyOverlay { position: fixed; inset: 0; background: #F5F5F7; z-index: 150; display: none; flex-direction: column; overflow-y: auto; overflow-x: hidden; padding-top: 40px; }
         
-        /* 新增：毛玻璃岛屿容器，将视图整体包裹并顶起来 */
+        /* 毛玻璃岛屿容器 */
         .glass-island {
             width: 92%; margin: 20px auto;
             background: rgba(255, 255, 255, 0.5);
@@ -101,6 +108,7 @@
         .modal-btn-group { display: flex; width: 85%; gap: 12px; margin-bottom: 50px; }
         .modal-type-btn { flex: 1; padding: 16px 0; border: 2px solid #000 !important; border-radius: 14px !important; text-align: center; font-size: 16px; font-weight: 700; }
         .modal-type-btn.active { background: #000 !important; color: #FFF !important; }
+        .modal-type-btn:active { background: #E5E5E7; }
         .modal-note-row { width: 80%; border-bottom: 2px solid #000; padding-bottom: 8px; }
         #noteInput { width: 100%; background: transparent; outline: none; border: none; text-align: center; font-size: 16px; }
 
@@ -163,7 +171,7 @@
     <div id="inputModal">
         <div class="modal-handle" onclick="history.back()"></div>
         <div class="modal-amount-row">
-            <input type="number" id="amountInput" placeholder="0">
+            <input type="number" id="amountInput" placeholder="0" inputmode="decimal">
             <span class="text-xl font-bold mt-4">元</span>
         </div>
         <div class="modal-btn-group">
