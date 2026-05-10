@@ -1,5 +1,5 @@
 # -app
-自创记账
+简记
 ![项目封面](cover.png)
 ## Bauhaus Ledger Pro 1.0
 - **风格**: Bauhaus 简约美学
