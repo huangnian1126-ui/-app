@@ -1,4 +1,4 @@
-self.addEventListenerself.addEventListener("install",e=>{
+self.addEventListener("install",e=>{
 
     self.skipWaiting();
 
