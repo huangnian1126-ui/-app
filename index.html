@@ -1,0 +1,919 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>生活记录器 Pro</title>
+<link rel="manifest" href="manifest.json">
+
+<meta name="theme-color" content="#050816">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
+
+<style>
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+body{
+    font-family:"Noto Sans SC",sans-serif;
+    background:#050816;
+    color:white;
+    min-height:100vh;
+    padding:20px;
+    overflow-x:hidden;
+}
+
+.container{
+    max-width:700px;
+    margin:auto;
+}
+
+.header{
+    margin-top:20px;
+    margin-bottom:30px;
+}
+
+.title{
+    font-size:42px;
+    font-weight:700;
+}
+
+.subtitle{
+    margin-top:10px;
+    color:rgba(255,255,255,0.6);
+    line-height:1.7;
+}
+
+.topBar{
+    display:flex;
+    gap:12px;
+    margin-bottom:24px;
+}
+
+.searchInput{
+    flex:1;
+    height:56px;
+    border:none;
+    outline:none;
+    border-radius:20px;
+    padding:0 20px;
+    background:rgba(255,255,255,0.08);
+    color:white;
+    font-size:16px;
+    border:1px solid rgba(255,255,255,0.06);
+    backdrop-filter:blur(20px);
+}
+
+.searchInput::placeholder{
+    color:rgba(255,255,255,0.4);
+}
+
+.addBtn{
+    width:64px;
+    border:none;
+    border-radius:20px;
+    background:linear-gradient(135deg,#2563eb,#7c3aed);
+    color:white;
+    font-size:34px;
+    font-weight:300;
+}
+
+.card{
+    background:rgba(255,255,255,0.06);
+    border:1px solid rgba(255,255,255,0.06);
+    backdrop-filter:blur(25px);
+    border-radius:28px;
+    padding:24px;
+    margin-bottom:18px;
+    box-shadow:0 10px 30px rgba(0,0,0,0.25);
+}
+
+.name{
+    font-size:28px;
+    font-weight:700;
+}
+
+.timeText{
+    margin-top:20px;
+    font-size:34px;
+    font-weight:700;
+}
+
+.realTime{
+    margin-top:12px;
+    color:rgba(255,255,255,0.5);
+    line-height:1.7;
+    font-size:14px;
+}
+
+.bottom{
+    display:flex;
+    gap:12px;
+    margin-top:22px;
+}
+
+.recordBtn{
+    flex:1;
+    height:52px;
+    border:none;
+    border-radius:18px;
+    background:linear-gradient(135deg,#2563eb,#7c3aed);
+    color:white;
+    font-size:16px;
+    font-weight:700;
+}
+
+.historyBtn{
+    width:56px;
+    border:none;
+    border-radius:18px;
+    background:rgba(255,255,255,0.06);
+    color:white;
+    font-size:20px;
+}
+
+.deleteBtn{
+    width:56px;
+    border:none;
+    border-radius:18px;
+    background:rgba(255,255,255,0.06);
+    color:white;
+    font-size:22px;
+}
+
+.toast{
+    position:fixed;
+    left:50%;
+    bottom:30px;
+    transform:translateX(-50%);
+    background:rgba(255,255,255,0.08);
+    border:1px solid rgba(255,255,255,0.08);
+    backdrop-filter:blur(20px);
+    padding:14px 22px;
+    border-radius:18px;
+    font-size:14px;
+    opacity:0;
+    transition:0.3s;
+    pointer-events:none;
+    z-index:9999;
+}
+
+.toast.show{
+    opacity:1;
+    bottom:40px;
+}
+
+.modal{
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,0.6);
+    display:none;
+    align-items:center;
+    justify-content:center;
+    padding:20px;
+    z-index:999;
+}
+
+.modal.show{
+    display:flex;
+}
+
+.modalBox{
+    width:100%;
+    max-width:420px;
+    background:#101528;
+    border-radius:28px;
+    padding:24px;
+    border:1px solid rgba(255,255,255,0.08);
+}
+
+.modalTitle{
+    font-size:24px;
+    font-weight:700;
+    margin-bottom:20px;
+}
+
+.modalInput{
+    width:100%;
+    height:56px;
+    border:none;
+    outline:none;
+    border-radius:18px;
+    padding:0 18px;
+    background:rgba(255,255,255,0.06);
+    color:white;
+    font-size:16px;
+    margin-bottom:18px;
+}
+
+.modalBtns{
+    display:flex;
+    gap:12px;
+}
+
+.cancelBtn,
+.confirmBtn{
+    flex:1;
+    height:52px;
+    border:none;
+    border-radius:18px;
+    color:white;
+    font-size:15px;
+}
+
+.cancelBtn{
+    background:rgba(255,255,255,0.06);
+}
+
+.confirmBtn{
+    background:linear-gradient(135deg,#2563eb,#7c3aed);
+}
+
+.historyPage{
+    position:fixed;
+    inset:0;
+    background:#050816;
+    z-index:2000;
+    overflow-y:auto;
+    transform:translateX(100%);
+    transition:0.35s;
+    padding:20px;
+}
+
+.historyPage.show{
+    transform:translateX(0);
+}
+
+.historyHeader{
+    display:flex;
+    align-items:center;
+    gap:14px;
+    margin-top:10px;
+    margin-bottom:30px;
+}
+
+.backBtn{
+    width:46px;
+    height:46px;
+    border:none;
+    border-radius:16px;
+    background:rgba(255,255,255,0.06);
+    color:white;
+    font-size:22px;
+}
+
+.historyTitle{
+    font-size:30px;
+    font-weight:700;
+}
+
+.historyList{
+    display:flex;
+    flex-direction:column;
+    gap:14px;
+}
+
+.historyItem{
+    background:rgba(255,255,255,0.06);
+    border:1px solid rgba(255,255,255,0.06);
+    border-radius:22px;
+    padding:18px;
+}
+
+.historyTime{
+    font-size:18px;
+    font-weight:600;
+}
+
+.empty{
+    text-align:center;
+    margin-top:120px;
+    color:rgba(255,255,255,0.35);
+}
+
+button{
+    cursor:pointer;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+    <div class="header">
+
+        <div class="title">
+            生活记录器
+        </div>
+
+        <div class="subtitle">
+            记录你的每一次生活轨迹
+        </div>
+
+    </div>
+
+    <div class="topBar">
+
+        <input
+        id="searchInput"
+        class="searchInput"
+        placeholder="搜索项目..."
+        oninput="render()">
+
+        <button
+        class="addBtn"
+        onclick="openModal()">
+
+            +
+
+        </button>
+
+    </div>
+
+    <div id="list"></div>
+
+</div>
+
+<div id="toast" class="toast"></div>
+
+<div id="modal" class="modal">
+
+    <div class="modalBox">
+
+        <div class="modalTitle">
+            添加新项目
+        </div>
+
+        <input
+        id="newItemInput"
+        class="modalInput"
+        placeholder="例如：洗鞋子">
+
+        <div class="modalBtns">
+
+            <button
+            class="cancelBtn"
+            onclick="closeModal()">
+
+                取消
+
+            </button>
+
+            <button
+            class="confirmBtn"
+            onclick="addItem()">
+
+                添加
+
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+<div id="historyPage" class="historyPage">
+
+    <div class="historyHeader">
+
+        <button
+        class="backBtn"
+        onclick="history.back()">
+
+            ←
+
+        </button>
+
+        <div
+        id="historyTitle"
+        class="historyTitle">
+
+        </div>
+
+    </div>
+
+    <div
+    id="historyList"
+    class="historyList">
+
+    </div>
+
+</div>
+
+<script>
+
+let items = JSON.parse(
+localStorage.getItem("lifeTrackerPro")
+) || [
+
+{
+    name:"🧺 洗衣服",
+    records:[]
+},
+
+{
+    name:"🍳 做饭",
+    records:[]
+},
+
+{
+    name:"🛏 换床单",
+    records:[]
+}
+
+];
+
+let deleteWait = null;
+let currentHistoryIndex = null;
+let historyDeleteMap = {};
+
+function save(){
+
+    localStorage.setItem(
+        "lifeTrackerPro",
+        JSON.stringify(items)
+    );
+
+}
+
+function showToast(text){
+
+    let toast =
+    document.getElementById("toast");
+
+    toast.innerText = text;
+
+    toast.classList.add("show");
+
+    clearTimeout(window.toastTimer);
+
+    window.toastTimer = setTimeout(()=>{
+
+        toast.classList.remove("show");
+
+    },2000);
+
+}
+
+function openModal(){
+
+    history.pushState(
+        {modal:true},
+        ""
+    );
+
+    document
+    .getElementById("modal")
+    .classList.add("show");
+
+}
+
+function closeModal(){
+
+    document
+    .getElementById("modal")
+    .classList.remove("show");
+
+}
+
+function openHistory(index){
+
+    currentHistoryIndex = index;
+
+    history.pushState(
+        {history:true},
+        ""
+    );
+
+    renderHistory();
+
+    document
+    .getElementById("historyPage")
+    .classList.add("show");
+
+}
+
+function closeHistory(){
+
+    document
+    .getElementById("historyPage")
+    .classList.remove("show");
+
+}
+
+window.addEventListener("popstate",function(){
+
+    let modal =
+    document.getElementById("modal");
+
+    let historyPage =
+    document.getElementById("historyPage");
+
+    if(historyPage.classList.contains("show")){
+
+        closeHistory();
+
+        return;
+    }
+
+    if(modal.classList.contains("show")){
+
+        closeModal();
+
+        return;
+    }
+
+});
+
+function getLastTime(item){
+
+    if(item.records.length === 0){
+
+        return null;
+    }
+
+    return item.records[
+        item.records.length - 1
+    ];
+
+}
+
+function getDiffText(time){
+
+    if(!time){
+
+        return "还没有记录";
+    }
+
+    let now = Date.now();
+
+    let diff = now - time;
+
+    let minute = 1000 * 60;
+    let hour = minute * 60;
+    let day = hour * 24;
+    let month = day * 30;
+
+    if(diff < minute){
+
+        return "刚刚";
+    }
+
+    if(diff < hour){
+
+        let m = Math.floor(diff / minute);
+
+        return m + " 分钟前";
+    }
+
+    if(diff < day){
+
+        let h = Math.floor(diff / hour);
+
+        let m = Math.floor(
+            (diff % hour) / minute
+        );
+
+        return h + " 小时 " + m + " 分钟前";
+    }
+
+    if(diff < month){
+
+        let d = Math.floor(diff / day);
+
+        let h = Math.floor(
+            (diff % day) / hour
+        );
+
+        return d + " 天 " + h + " 小时前";
+    }
+
+    let mo = Math.floor(diff / month);
+
+    return mo + " 个月前";
+
+}
+
+function formatTime(time){
+
+    return new Date(time)
+    .toLocaleString("zh-CN");
+
+}
+
+function render(){
+
+    let keyword =
+    document.getElementById("searchInput")
+    .value
+    .trim();
+
+    let list =
+    document.getElementById("list");
+
+    let filtered = items.filter(item=>{
+
+        return item.name.includes(keyword);
+
+    });
+
+    if(filtered.length === 0){
+
+        list.innerHTML = `
+
+        <div class="empty">
+            没有找到相关项目
+        </div>
+
+        `;
+
+        return;
+    }
+
+    list.innerHTML = "";
+
+    filtered.forEach(item=>{
+
+        let index =
+        items.indexOf(item);
+
+        let lastTime =
+        getLastTime(item);
+
+        list.innerHTML += `
+
+        <div class="card">
+
+            <div class="name">
+
+                ${item.name}
+
+            </div>
+
+            <div class="timeText">
+
+                ${getDiffText(lastTime)}
+
+            </div>
+
+            <div class="realTime">
+
+                上次记录时间：
+
+                <br>
+
+                ${lastTime ? formatTime(lastTime) : "暂无记录"}
+
+            </div>
+
+            <div class="bottom">
+
+                <button
+                class="recordBtn"
+                onclick="recordTime(${index})">
+
+                    记录一次
+
+                </button>
+
+                <button
+                class="historyBtn"
+                onclick="openHistory(${index})">
+
+                    ≡
+
+                </button>
+
+                <button
+                class="deleteBtn"
+                onclick="prepareDelete(${index})">
+
+                    ×
+
+                </button>
+
+            </div>
+
+        </div>
+
+        `;
+    });
+
+}
+
+function renderHistory(){
+
+    let item = items[currentHistoryIndex];
+
+    let title =
+    document.getElementById("historyTitle");
+
+    let list =
+    document.getElementById("historyList");
+
+    title.innerText = item.name;
+
+    if(item.records.length === 0){
+
+        list.innerHTML = `
+
+        <div class="empty">
+            暂无历史记录
+        </div>
+
+        `;
+
+        return;
+    }
+
+    list.innerHTML = "";
+
+    [...item.records]
+    .reverse()
+    .forEach((time,reverseIndex)=>{
+
+        let realIndex =
+        item.records.length - 1 - reverseIndex;
+
+        list.innerHTML += `
+
+        <div
+        class="historyItem"
+        onclick="historyTap(${realIndex})">
+
+            <div class="historyTime">
+
+                ${formatTime(time)}
+
+            </div>
+
+        </div>
+
+        `;
+    });
+
+}
+
+function historyTap(index){
+
+    if(!historyDeleteMap[index]){
+
+        historyDeleteMap[index] = 0;
+    }
+
+    historyDeleteMap[index]++;
+
+    if(historyDeleteMap[index] === 1){
+
+        showToast("再次点击两次删除");
+
+    }
+
+    if(historyDeleteMap[index] === 2){
+
+        showToast("再次点击一次删除");
+
+    }
+
+    if(historyDeleteMap[index] >= 3){
+
+        items[currentHistoryIndex]
+        .records
+        .splice(index,1);
+
+        save();
+
+        renderHistory();
+
+        showToast("记录已删除");
+
+        historyDeleteMap[index] = 0;
+
+        return;
+    }
+
+    setTimeout(()=>{
+
+        historyDeleteMap[index] = 0;
+
+    },1200);
+
+}
+
+function recordTime(index){
+
+    items[index].records.push(
+        Date.now()
+    );
+
+    save();
+
+    render();
+
+    showToast("记录成功");
+
+}
+
+function addItem(){
+
+    let input =
+    document.getElementById("newItemInput");
+
+    let value =
+    input.value.trim();
+
+    if(value === ""){
+
+        return;
+    }
+
+    items.unshift({
+
+        name:value,
+        records:[]
+    });
+
+    input.value = "";
+
+    save();
+
+    render();
+
+    closeModal();
+
+    showToast("添加成功");
+
+}
+
+function prepareDelete(index){
+
+    if(deleteWait === index){
+
+        deleteItem(index);
+
+        deleteWait = null;
+
+        return;
+    }
+
+    deleteWait = index;
+
+    showToast("再次点击 × 删除项目");
+
+    setTimeout(()=>{
+
+        deleteWait = null;
+
+    },2000);
+
+}
+
+function deleteItem(index){
+
+    items.splice(index,1);
+
+    save();
+
+    render();
+
+    showToast("已删除");
+
+}
+
+render();
+
+setInterval(()=>{
+
+    render();
+
+},1000);
+
+</script>
+<script>
+
+if("serviceWorker" in navigator){
+
+    navigator.serviceWorker
+    .register("sw.js");
+
+}
+
+</script>
+
+</body>
+
+</html>
